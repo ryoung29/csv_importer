@@ -5,7 +5,7 @@ import copy
 
 import csv
 from django.db.models.base import Model
-from fields import Field, ForeignKeyFieldError, IgnoredField, ComposedKeyField, XMLRootField, FieldValueMissing
+from .fields import Field, ForeignKeyFieldError, IgnoredField, ComposedKeyField, XMLRootField, FieldValueMissing
 
 
 class ImproperlyConfigured(Exception):
@@ -257,7 +257,7 @@ class CsvModel(BaseModel):
                 else:
                     value = self.get_value(attr_name, field, value)
                     self.set_values(values, self.field_matching_name, value)
-            except ValueError, e:
+            except ValueError as e:
                 if silent_failure:
                     load_failed = True
                     break
@@ -440,14 +440,14 @@ class CsvImporter(object):
             value = self.layout.process_line(lines, line, model, delimiter=self.delimiter)
         except SkipRow:
             pass
-        except ForeignKeyFieldError, e:
+        except ForeignKeyFieldError as e:
             raise CsvFieldDataException(line_number, field_error=e.message, model=e.model, value=e.value)
-        except ValueError, e:
+        except ValueError as e:
             if line_number == 0 and self.csvModel.has_header():
                 pass
             else:
                 raise CsvDataException(line_number, field_error=e.message)
-        except IndexError, e:
+        except IndexError as e:
             raise CsvDataException(line_number, error="Number of fields invalid")
         return value
 
