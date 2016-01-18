@@ -58,9 +58,9 @@ class Field(object):
                 if not validator.validate(value):
                     raise FieldError(validator.__class__.validation_message)
             return value
-        except FieldError, e:
+        except FieldError as e:
             raise e
-        except ValueError, e:
+        except ValueError as e:
             raise ValueError("Value \'%s\' in columns %d does not match the expected type %s" %
                              (value, self.position + 1, self.__class__.field_name))
 
@@ -117,14 +117,14 @@ class ForeignKey(Field):
         try:
             if not issubclass(self.model, djangoModel):
                 raise TypeError("The first argument should be a django model class.")
-        except TypeError, e:
+        except TypeError as e:
             raise TypeError("The first argument should be a django model class.")
         super(ForeignKey, self).__init__(**kwargs)
 
     def to_python(self, value):
         try:
             return self.model.objects.get(**{self.pk: value})
-        except ObjectDoesNotExist, e:
+        except ObjectDoesNotExist as e:
             raise ForeignKeyFieldError("No match found for %s" % self.model.__name__, self.model.__name__, value)
 
 
@@ -132,7 +132,7 @@ class ComposedKeyField(ForeignKey):
     def to_python(self, value):
         try:
             return self.model.objects.get(**value)
-        except ObjectDoesNotExist, e:
+        except ObjectDoesNotExist as e:
             raise ForeignKeyFieldError("No match found for %s" % self.model.__name__, self.model.__name__, value)
 
 class XMLField(Field):
@@ -229,7 +229,7 @@ class XMLForeignKey(XMLField, ForeignKey):
     def get_prep_value(self, value):
         try:
             return super(XMLForeignKey, self).get_prep_value(value)
-        except ForeignKeyFieldError, e:
+        except ForeignKeyFieldError as e:
             if self.nomatch:
                 return None
             else:
